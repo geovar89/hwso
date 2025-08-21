@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head> 
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>How We See Other</title>
@@ -16,7 +16,23 @@
 
   h1 {
     margin-bottom: 20px;
+    text-align: center;
   }
+
+  #downloadBtn {
+    margin-bottom: 20px;
+    padding: 12px 25px;
+    background: #17a2b8;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    width: 200px;
+    max-width: 90%;
+  }
+
+  #downloadBtn:hover { background: #117a8b; }
 
   .grid {
     display: grid;
@@ -28,37 +44,42 @@
 
   .cell {
     background: white;
-    padding: 10px;
+    padding: 15px;
     border-radius: 15px;
     box-shadow: 0 3px 6px rgba(0,0,0,0.1);
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
+    min-height: 280px;
+    transition: all 0.3s ease;
   }
 
   .cell img {
     max-width: 100%;
-    max-height: 150px;
+    max-height: 200px;
     border-radius: 10px;
     margin-top: 10px;
   }
 
   .cell input[type="text"] {
-    width: 90%;
-    padding: 5px;
-    margin-bottom: 5px;
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 8px;
     border-radius: 5px;
     border: 1px solid #ccc;
+    box-sizing: border-box;
   }
 
-  .cell button {
-    margin: 2px;
-    padding: 5px 10px;
+  .cell button, .upload-label {
+    margin: 4px 0;
+    padding: 10px 15px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     color: white;
+    width: 100%;
+    font-size: 14px;
   }
 
   .enter-btn { background: #007BFF; }
@@ -67,18 +88,37 @@
   .reset-btn { background: #dc3545; }
   .reset-btn:hover { background: #a71d2a; }
 
-  .upload-btn { background: #28a745; }
-  .upload-btn:hover { background: #1e7e34; }
+  .upload-label {
+    background: #28a745;
+    display: inline-block;
+    cursor: pointer;
+    text-align: center;
+  }
+
+  .upload-label:hover { background: #1e7e34; }
+
+  .upload-label input { display: none; }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .grid { grid-template-columns: repeat(2, 1fr); }
+    .cell { min-height: 250px; }
+  }
+
+  @media (max-width: 480px) {
+    .grid { grid-template-columns: 1fr; }
+    .cell { min-height: 220px; }
+  }
 </style>
 </head>
 <body>
 
 <h1>How We See Other</h1>
+<button id="downloadBtn">Download Grid as PNG</button>
 
-<div class="grid" id="grid">
-  <!-- Cells θα δημιουργηθούν με JavaScript -->
-</div>
+<div class="grid" id="grid"></div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
   const categories = [
     'animal', 'place', 'plant', 'character', 
@@ -87,7 +127,7 @@
 
   const grid = document.getElementById('grid');
 
-  categories.forEach((category, index) => {
+  categories.forEach(category => {
     const cell = document.createElement('div');
     cell.className = 'cell';
 
@@ -109,7 +149,9 @@
       if (input.value) {
         img.src = input.value;
         img.style.display = 'block';
-        input.value = '';
+        input.style.display = 'none';
+        enterBtn.style.display = 'none';
+        uploadLabel.style.display = 'none';
       }
     };
 
@@ -119,17 +161,23 @@
     resetBtn.onclick = () => {
       img.src = '';
       img.style.display = 'none';
+      input.style.display = 'block';
+      enterBtn.style.display = 'inline-block';
+      uploadLabel.style.display = 'inline-block';
     };
 
-    const uploadBtn = document.createElement('input');
-    uploadBtn.type = 'file';
-    uploadBtn.accept = 'image/*';
-    uploadBtn.onchange = (e) => {
+    const uploadInput = document.createElement('input');
+    uploadInput.type = 'file';
+    uploadInput.accept = 'image/*';
+    uploadInput.onchange = (e) => {
       if (e.target.files && e.target.files[0]) {
         const reader = new FileReader();
         reader.onload = (event) => {
           img.src = event.target.result;
           img.style.display = 'block';
+          input.style.display = 'none';
+          enterBtn.style.display = 'none';
+          uploadLabel.style.display = 'none';
         }
         reader.readAsDataURL(e.target.files[0]);
       }
@@ -137,10 +185,8 @@
 
     const uploadLabel = document.createElement('label');
     uploadLabel.textContent = 'Upload';
-    uploadLabel.className = 'upload-btn';
-    uploadLabel.style.display = 'inline-block';
-    uploadLabel.style.cursor = 'pointer';
-    uploadLabel.appendChild(uploadBtn);
+    uploadLabel.className = 'upload-label';
+    uploadLabel.appendChild(uploadInput);
 
     cell.appendChild(title);
     cell.appendChild(input);
@@ -151,6 +197,27 @@
 
     grid.appendChild(cell);
   });
+
+  // Download grid as PNG
+  
+  document.getElementById('downloadBtn').onclick = () => {
+    // Αποθήκευση τωρινών τιμών CSS
+    const oldGridTemplate = grid.style.gridTemplateColumns;
+
+    // Αναγκαστικά 3x3 για την λήψη
+    grid.style.gridTemplateColumns = 'repeat(3, 1fr)';
+
+    html2canvas(grid, {backgroundColor: null}).then(canvas => {
+      const link = document.createElement('a');
+      link.download = 'grid.png';
+      link.href = canvas.toDataURL();
+      link.click();
+
+      // Επαναφορά responsive διάταξης
+      grid.style.gridTemplateColumns = oldGridTemplate;
+    });
+  };
+  
 </script>
 
 </body>
