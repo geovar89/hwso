@@ -56,34 +56,6 @@
       grid-template-columns: repeat(1, 1fr);
     }
   }
-
-  /* Print styles */
-  @media print {
-    body * {
-      visibility: hidden;
-    }
-    .grid, .grid * {
-      visibility: visible;
-    }
-    .grid {
-      position: absolute;
-      top: 0;
-      left: 0;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      grid-gap: 5px;
-    }
-    .cell {
-      padding: 5px;
-    }
-    .cell img {
-      max-width: 100%;
-      max-height: none;
-    }
-    .cell button, .cell input {
-      display: none !important;
-    }
-  }
 </style>
 </head>
 <body>
@@ -145,20 +117,16 @@
 document.querySelectorAll('.cell').forEach(cell => {
   const upload = cell.querySelector('.upload');
   const reset = cell.querySelector('.reset');
-
   reset.style.display = 'none';
 
   upload.addEventListener('change', e => {
     const file = e.target.files[0];
     if (!file) return;
-
     const reader = new FileReader();
     reader.onload = function(event) {
       const img = document.createElement('img');
       img.src = event.target.result;
       cell.appendChild(img);
-
-      // Hide upload button, keep only reset under image
       upload.style.display = 'none';
       reset.style.display = 'inline-block';
     }
@@ -176,10 +144,20 @@ document.querySelectorAll('.cell').forEach(cell => {
 
 document.getElementById('download').addEventListener('click', () => {
   const grid = document.querySelector('.grid');
-  const buttons = grid.querySelectorAll('button, input');
-  buttons.forEach(b => b.style.display = 'none');
 
-  html2canvas(grid, {
+  // Create a temporary clone for capture
+  const clone = grid.cloneNode(true);
+  clone.style.display = 'grid';
+  clone.style.gridTemplateColumns = 'repeat(3, 1fr)';
+  clone.style.gridGap = '10px';
+  clone.style.position = 'absolute';
+  clone.style.left = '-9999px';
+  document.body.appendChild(clone);
+
+  // Remove upload/reset buttons from clone
+  clone.querySelectorAll('input, button').forEach(b => b.remove());
+
+  html2canvas(clone, {
     backgroundColor: '#fff',
     scale: 2,
     allowTaint: true,
@@ -190,10 +168,7 @@ document.getElementById('download').addEventListener('click', () => {
       link.href = URL.createObjectURL(blob);
       link.download = 'grid.png';
       link.click();
-      // Restore buttons after download
-      buttons.forEach(b => {
-        if (!b.classList.contains('reset') || b.querySelector('img')) b.style.display = 'inline-block';
-      });
+      clone.remove();
     }, 'image/png');
   });
 });
