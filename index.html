@@ -3,102 +3,57 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>How We See Other - Stylish Grid</title>
+<title>How We See Other - Grid App</title>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <style>
   body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #f0f2f5;
+    font-family: Arial, sans-serif;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 20px;
-  }
-
-  h1 {
-    margin-bottom: 20px;
-    color: #333;
+    padding: 10px;
   }
 
   .grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    grid-gap: 15px;
+    grid-gap: 10px;
     width: 100%;
-    max-width: 960px;
+    max-width: 900px;
   }
 
   .cell {
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    border: 1px solid #ccc;
+    padding: 10px;
+    box-sizing: border-box;
+    text-align: center;
     position: relative;
-    padding: 15px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    aspect-ratio: 1/1; /* keeps cells square */
-    overflow: hidden;
-    transition: transform 0.2s;
-  }
-
-  .cell:hover {
-    transform: translateY(-3px);
-  }
-
-  .cell h2 {
-    margin: 0 0 10px 0;
-    font-size: 18px;
-    color: #444;
   }
 
   .cell img {
-    width: 100%;
-    height: auto;
-    max-height: 60%;
-    object-fit: contain;
-    border-radius: 8px;
-    margin-bottom: 10px;
+    max-width: 100%;
+    max-height: 200px;
+    display: block;
+    margin: 5px auto;
   }
 
-  input[type="file"] {
-    margin-bottom: 10px;
-    padding: 6px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-  }
-
-  button {
-    background-color: #1d72b8;
-    color: white;
+  button, input[type="file"] {
+    margin-top: 5px;
+    padding: 5px 10px;
     border: none;
-    padding: 10px 16px;
+    background-color: #007bff;
+    color: white;
     cursor: pointer;
-    border-radius: 8px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-    transition: background 0.2s, transform 0.1s;
+    border-radius: 5px;
   }
 
-  button:hover {
-    background-color: #1661a0;
-    transform: translateY(-2px);
-  }
-	
-  #download {
-    margin-top: 25px;
-    font-size: 16px;
+  button:hover, input[type="file"]:hover {
+    background-color: #0056b3;
   }
 
-  /* Responsive */
-  @media (max-width: 900px) {
+  @media (max-width: 768px) {
     .grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-
-  @media (max-width: 600px) {
-    .grid {
-      grid-template-columns: 1fr;
+      grid-template-columns: repeat(1, 1fr);
     }
   }
 
@@ -114,123 +69,135 @@
       position: absolute;
       top: 0;
       left: 0;
-      display: grid !important;
-      grid-template-columns: repeat(3, 1fr) !important;
-      grid-gap: 0;
-      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-gap: 5px;
     }
     .cell {
-      border: 1px solid #000;
-      min-height: 200px;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
-      align-items: center;
-      page-break-inside: avoid;
       padding: 5px;
-    }
-    .cell input,
-    .cell button {
-      display: none !important;
     }
     .cell img {
       max-width: 100%;
-      max-height: 150px;
-      object-fit: contain;
+      max-height: none;
+    }
+    .cell button, .cell input {
+      display: none !important;
     }
   }
 </style>
 </head>
 <body>
-<h1>How We See Other - Stylish Grid</h1>
+
+<h1>How We See Other - Grid</h1>
+
 <div class="grid">
-  <div class="cell"><h2>Animal</h2><input type="file" class="upload" accept="image/*"><button class="reset" style="display:none;">Reset</button></div>
-  <div class="cell"><h2>Place</h2><input type="file" class="upload" accept="image/*"><button class="reset" style="display:none;">Reset</button></div>
-  <div class="cell"><h2>Plant</h2><input type="file" class="upload" accept="image/*"><button class="reset" style="display:none;">Reset</button></div>
-  <div class="cell"><h2>Character</h2><input type="file" class="upload" accept="image/*"><button class="reset" style="display:none;">Reset</button></div>
-  <div class="cell"><h2>Season</h2><input type="file" class="upload" accept="image/*"><button class="reset" style="display:none;">Reset</button></div>
-  <div class="cell"><h2>Hobby</h2><input type="file" class="upload" accept="image/*"><button class="reset" style="display:none;">Reset</button></div>
-  <div class="cell"><h2>Color</h2><input type="file" class="upload" accept="image/*"><button class="reset" style="display:none;">Reset</button></div>
-  <div class="cell"><h2>Crystal</h2><input type="file" class="upload" accept="image/*"><button class="reset" style="display:none;">Reset</button></div>
-  <div class="cell"><h2>Food</h2><input type="file" class="upload" accept="image/*"><button class="reset" style="display:none;">Reset</button></div>
+  <div class="cell" data-category="animal">
+    <div class="title">Animal</div>
+    <input type="file" accept="image/*" class="upload">
+    <button class="reset">Reset</button>
+  </div>
+  <div class="cell" data-category="place">
+    <div class="title">Place</div>
+    <input type="file" accept="image/*" class="upload">
+    <button class="reset">Reset</button>
+  </div>
+  <div class="cell" data-category="plant">
+    <div class="title">Plant</div>
+    <input type="file" accept="image/*" class="upload">
+    <button class="reset">Reset</button>
+  </div>
+  <div class="cell" data-category="character">
+    <div class="title">Character</div>
+    <input type="file" accept="image/*" class="upload">
+    <button class="reset">Reset</button>
+  </div>
+  <div class="cell" data-category="season">
+    <div class="title">Season</div>
+    <input type="file" accept="image/*" class="upload">
+    <button class="reset">Reset</button>
+  </div>
+  <div class="cell" data-category="hobby">
+    <div class="title">Hobby</div>
+    <input type="file" accept="image/*" class="upload">
+    <button class="reset">Reset</button>
+  </div>
+  <div class="cell" data-category="color">
+    <div class="title">Color</div>
+    <input type="file" accept="image/*" class="upload">
+    <button class="reset">Reset</button>
+  </div>
+  <div class="cell" data-category="crystal">
+    <div class="title">Crystal</div>
+    <input type="file" accept="image/*" class="upload">
+    <button class="reset">Reset</button>
+  </div>
+  <div class="cell" data-category="food">
+    <div class="title">Food</div>
+    <input type="file" accept="image/*" class="upload">
+    <button class="reset">Reset</button>
+  </div>
 </div>
+
+<br>
 <button id="download">Download Grid as PNG</button>
 
 <script>
-const cells = document.querySelectorAll('.cell');
-cells.forEach(cell => {
+document.querySelectorAll('.cell').forEach(cell => {
   const upload = cell.querySelector('.upload');
   const reset = cell.querySelector('.reset');
+
+  reset.style.display = 'none';
 
   upload.addEventListener('change', e => {
     const file = e.target.files[0];
     if (!file) return;
-    const img = document.createElement('img');
-    img.src = URL.createObjectURL(file);
-    img.onload = () => URL.revokeObjectURL(img.src);
-    cell.appendChild(img);
-    upload.style.display = 'none';
-    reset.style.display = 'block';
+
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      const img = document.createElement('img');
+      img.src = event.target.result;
+      cell.appendChild(img);
+
+      // Hide upload button, keep only reset under image
+      upload.style.display = 'none';
+      reset.style.display = 'inline-block';
+    }
+    reader.readAsDataURL(file);
   });
 
   reset.addEventListener('click', () => {
     const img = cell.querySelector('img');
     if (img) img.remove();
-    upload.style.display = 'block';
+    upload.value = '';
+    upload.style.display = 'inline-block';
     reset.style.display = 'none';
   });
 });
 
-document.getElementById('download').addEventListener('click', async () => {
-  const canvasSize = 900;
-  const cellSize = canvasSize / 3;
-  const canvas = document.createElement('canvas');
-  canvas.width = canvasSize;
-  canvas.height = canvasSize;
-  const ctx = canvas.getContext('2d');
-  ctx.fillStyle = '#fff';
-  ctx.fillRect(0,0,canvas.width,canvas.height);
+document.getElementById('download').addEventListener('click', () => {
+  const grid = document.querySelector('.grid');
+  const buttons = grid.querySelectorAll('button, input');
+  buttons.forEach(b => b.style.display = 'none');
 
-  for(let i=0;i<cells.length;i++){
-    const cell = cells[i];
-    const imgEl = cell.querySelector('img');
-    const title = cell.querySelector('h2').innerText;
-    const row = Math.floor(i/3);
-    const col = i%3;
-    const x = col*cellSize;
-    const y = row*cellSize;
-
-    ctx.fillStyle = '#000';
-    ctx.font = '22px Arial';
-    ctx.textAlign = 'center';
-    ctx.fillText(title, x+cellSize/2, y+28);
-
-    if(imgEl && imgEl.src){
-      const img = new Image();
-      img.src = imgEl.src;
-      await new Promise(resolve => {
-        img.onload = () => {
-          const scale = Math.min(cellSize/img.width, (cellSize-40)/img.height);
-          const imgW = img.width*scale;
-          const imgH = img.height*scale;
-          ctx.drawImage(img, x+(cellSize-imgW)/2, y+35, imgW, imgH);
-          resolve();
-        }
-        img.onerror = resolve;
+  html2canvas(grid, {
+    backgroundColor: '#fff',
+    scale: 2,
+    allowTaint: true,
+    useCORS: true
+  }).then(canvas => {
+    canvas.toBlob(blob => {
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'grid.png';
+      link.click();
+      // Restore buttons after download
+      buttons.forEach(b => {
+        if (!b.classList.contains('reset') || b.querySelector('img')) b.style.display = 'inline-block';
       });
-    }
-
-    ctx.strokeStyle = '#ccc';
-    ctx.strokeRect(x,y,cellSize,cellSize);
-  }
-
-  canvas.toBlob(blob => {
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = 'grid.png';
-    link.click();
-  }, 'image/png');
+    }, 'image/png');
+  });
 });
 </script>
+
 </body>
 </html>
