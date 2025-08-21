@@ -3,56 +3,36 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>How We See Other</title>
+<title>How We See Other - Grid App</title>
 <style>
   body {
     font-family: Arial, sans-serif;
-    background: #f3f3f3;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
     padding: 20px;
   }
 
   h1 {
-    margin-bottom: 20px;
     text-align: center;
   }
-
-  #downloadBtn {
-    margin-bottom: 20px;
-    padding: 12px 25px;
-    background: #17a2b8;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 16px;
-    width: 200px;
-    max-width: 90%;
-  }
-
-  #downloadBtn:hover { background: #117a8b; }
 
   .grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 15px;
-    max-width: 900px;
-    width: 100%;
   }
 
   .cell {
-    background: white;
-    padding: 15px;
-    border-radius: 15px;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 10px;
     display: flex;
     flex-direction: column;
     align-items: center;
+  }
+
+  .cell h2 {
+    margin: 0 0 10px;
+    font-size: 16px;
     text-align: center;
-    min-height: 280px;
-    transition: all 0.3s ease;
   }
 
   .cell img {
@@ -60,6 +40,11 @@
     max-height: 200px;
     border-radius: 10px;
     margin-top: 10px;
+    display: none;
+  }
+
+  .cell.has-image img {
+    display: block;
   }
 
   .cell input[type="text"] {
@@ -78,11 +63,27 @@
     border-radius: 5px;
     cursor: pointer;
     color: white;
-    width: 100%;
+    width: 80%;
     font-size: 14px;
   }
 
-  .enter-btn { background: #007BFF; }
+
+  #download {
+    margin-bottom: 20px;
+    padding: 12px 25px;
+    background: #17a2b8;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    width: 200px;
+    max-width: 90%;
+  }
+
+  #download:hover { background: #117a8b; }
+
+ .enter-btn { background: #007BFF; }
   .enter-btn:hover { background: #0056b3; }
 
   .reset-btn { background: #dc3545; }
@@ -96,128 +97,186 @@
   }
 
   .upload-label:hover { background: #1e7e34; }
-
-  .upload-label input { display: none; }
-
+	.upload-label input { display: none; }
+    
   /* Responsive */
   @media (max-width: 768px) {
-    .grid { grid-template-columns: repeat(2, 1fr); }
-    .cell { min-height: 250px; }
+    .grid {
+      grid-template-columns: repeat(1, 1fr);
+    }
   }
 
-  @media (max-width: 480px) {
-    .grid { grid-template-columns: 1fr; }
-    .cell { min-height: 220px; }
+  /* Print styles */
+  @media print {
+    input, button, label { display: none !important; }
+    .grid {
+      grid-template-columns: repeat(3, 1fr) !important;
+      gap: 0 !important;
+      width: 100% !important;
+    }
+    .cell {
+      aspect-ratio: 1 / 1;
+      padding: 5px;
+      box-shadow: none;
+      border-radius: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    .cell h2, .cell img {
+      display: block !important;
+      max-width: 100% !important;
+      max-height: 100% !important;
+    }
   }
 </style>
 </head>
 <body>
 
-<h1>How We See Other</h1>
-<button id="downloadBtn">Download Grid as PNG</button>
-
+<h1>How We See Other - Grid</h1>
+<button id="download">Download Grid as PNG</button>
 <div class="grid" id="grid"></div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
 <script>
-  const categories = [
-    'animal', 'place', 'plant', 'character', 
-    'season', 'hobby', 'color', 'crystal', 'food'
-  ];
-
+  const categories = ['animal','place','plant','character','season','hobby','color','crystal','food'];
   const grid = document.getElementById('grid');
 
-  categories.forEach(category => {
+  categories.forEach(cat => {
     const cell = document.createElement('div');
     cell.className = 'cell';
 
     const title = document.createElement('h2');
-    title.textContent = category;
-    title.style.textTransform = 'capitalize';
+    title.innerText = cat;
+    cell.appendChild(title);
 
     const input = document.createElement('input');
     input.type = 'text';
-    input.placeholder = 'Paste image URL';
-
-    const img = document.createElement('img');
-    img.style.display = 'none';
+    input.placeholder = 'Image URL';
+    cell.appendChild(input);
 
     const enterBtn = document.createElement('button');
-    enterBtn.textContent = 'Enter';
+    enterBtn.innerText = 'Enter';
     enterBtn.className = 'enter-btn';
-    enterBtn.onclick = () => {
-      if (input.value) {
-        img.src = input.value;
-        img.style.display = 'block';
-        input.style.display = 'none';
-        enterBtn.style.display = 'none';
-        uploadLabel.style.display = 'none';
-      }
-    };
+    cell.appendChild(enterBtn);
 
-    const resetBtn = document.createElement('button');
-    resetBtn.textContent = 'Reset';
-    resetBtn.className = 'reset-btn';
-    resetBtn.onclick = () => {
-      img.src = '';
-      img.style.display = 'none';
-      input.style.display = 'block';
-      enterBtn.style.display = 'inline-block';
-      uploadLabel.style.display = 'inline-block';
-    };
-
+    const uploadLabel = document.createElement('label');
+    uploadLabel.innerText = 'Upload';
+    uploadLabel.style.cursor = 'pointer';
     const uploadInput = document.createElement('input');
     uploadInput.type = 'file';
     uploadInput.accept = 'image/*';
+    uploadInput.style.display = 'none';
+    uploadLabel.appendChild(uploadInput);
+    uploadLabel.className = 'upload-label';
+    cell.appendChild(uploadLabel);
+
+    const resetBtn = document.createElement('button');
+    resetBtn.innerText = 'Reset';
+    resetBtn.className = 'reset-btn';
+    resetBtn.style.order = 1;
+    cell.appendChild(resetBtn);
+
+    const img = document.createElement('img');
+    cell.appendChild(img);
+
+    enterBtn.onclick = () => {
+      if(input.value){
+        img.src = input.value;
+        cell.classList.add('has-image');
+        input.style.display = 'none';
+        enterBtn.style.display = 'none';
+        uploadLabel.style.display = 'none';
+        resetBtn.style.order = 2;
+      }
+    };
+
     uploadInput.onchange = (e) => {
-      if (e.target.files && e.target.files[0]) {
+      if(e.target.files && e.target.files[0]){
         const reader = new FileReader();
         reader.onload = (event) => {
           img.src = event.target.result;
-          img.style.display = 'block';
+          cell.classList.add('has-image');
           input.style.display = 'none';
           enterBtn.style.display = 'none';
           uploadLabel.style.display = 'none';
+          resetBtn.style.order = 2;
         }
         reader.readAsDataURL(e.target.files[0]);
       }
     };
 
-    const uploadLabel = document.createElement('label');
-    uploadLabel.textContent = 'Upload';
-    uploadLabel.className = 'upload-label';
-    uploadLabel.appendChild(uploadInput);
-
-    cell.appendChild(title);
-    cell.appendChild(input);
-    cell.appendChild(enterBtn);
-    cell.appendChild(resetBtn);
-    cell.appendChild(uploadLabel);
-    cell.appendChild(img);
+    resetBtn.onclick = () => {
+      img.src = '';
+      cell.classList.remove('has-image');
+      input.style.display = 'block';
+      enterBtn.style.display = 'inline-block';
+      uploadLabel.style.display = 'inline-block';
+      resetBtn.style.order = 1;
+    };
 
     grid.appendChild(cell);
   });
 
-  // Download grid as PNG
+document.getElementById('download').onclick = async () => {
+  const cells = document.querySelectorAll('.grid .cell');
+  const canvasSize = 900; // 3x3, κάθε κελί 300x300
+  const cellSize = canvasSize / 3;
   
-  document.getElementById('downloadBtn').onclick = () => {
-    // Αποθήκευση τωρινών τιμών CSS
-    const oldGridTemplate = grid.style.gridTemplateColumns;
+  const canvas = document.createElement('canvas');
+  canvas.width = canvasSize;
+  canvas.height = canvasSize;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Αναγκαστικά 3x3 για την λήψη
-    grid.style.gridTemplateColumns = 'repeat(3, 1fr)';
+  for (let i = 0; i < cells.length; i++) {
+    const cell = cells[i];
+    const imgEl = cell.querySelector('img');
+    const title = cell.querySelector('h2').innerText;
 
-    html2canvas(grid, {backgroundColor: null}).then(canvas => {
-      const link = document.createElement('a');
-      link.download = 'grid.png';
-      link.href = canvas.toDataURL();
-      link.click();
+    const row = Math.floor(i / 3);
+    const col = i % 3;
+    const x = col * cellSize;
+    const y = row * cellSize;
 
-      // Επαναφορά responsive διάταξης
-      grid.style.gridTemplateColumns = oldGridTemplate;
-    });
-  };
-  
+    // Draw title
+    ctx.fillStyle = '#000';
+    ctx.font = '20px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText(title, x + cellSize / 2, y + 25);
+
+    // Draw image if exists
+    if(imgEl && imgEl.src) {
+      const img = new Image();
+      img.crossOrigin = 'anonymous'; // για URL images
+      img.src = imgEl.src;
+      await new Promise(resolve => {
+        img.onload = () => {
+          const scale = Math.min(cellSize / img.width, (cellSize-30) / img.height);
+          const imgWidth = img.width * scale;
+          const imgHeight = img.height * scale;
+          ctx.drawImage(img, x + (cellSize - imgWidth)/2, y + 30, imgWidth, imgHeight);
+          resolve();
+        }
+        img.onerror = resolve; // skip αν υπάρχει πρόβλημα
+      });
+    }
+
+    // Draw cell border
+    ctx.strokeStyle = '#ccc';
+    ctx.strokeRect(x, y, cellSize, cellSize);
+  }
+
+  // Μετατροπή σε blob και download
+  canvas.toBlob((blob) => {
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'grid.png';
+    link.click();
+  }, 'image/png');
+};
 </script>
 
 </body>
