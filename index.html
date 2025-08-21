@@ -3,281 +3,234 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>How We See Other - Grid App</title>
+<title>How We See Other - Stylish Grid</title>
 <style>
   body {
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f0f2f5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     padding: 20px;
   }
 
   h1 {
-    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
   }
 
   .grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 15px;
+    grid-gap: 15px;
+    width: 100%;
+    max-width: 960px;
   }
 
   .cell {
-    border: 1px solid #ccc;
-    padding: 10px;
-    border-radius: 10px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    position: relative;
+    padding: 15px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: flex-start;
+    aspect-ratio: 1/1; /* keeps cells square */
+    overflow: hidden;
+    transition: transform 0.2s;
+  }
+
+  .cell:hover {
+    transform: translateY(-3px);
   }
 
   .cell h2 {
-    margin: 0 0 10px;
-    font-size: 16px;
-    text-align: center;
+    margin: 0 0 10px 0;
+    font-size: 18px;
+    color: #444;
   }
 
   .cell img {
-    max-width: 100%;
-    max-height: 200px;
-    border-radius: 10px;
-    margin-top: 10px;
-    display: none;
-  }
-
-  .cell.has-image img {
-    display: block;
-  }
-
-  .cell input[type="text"] {
     width: 100%;
-    padding: 8px;
-    margin-bottom: 8px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    box-sizing: border-box;
-  }
-
-  .cell button, .upload-label {
-    margin: 4px 0;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    color: white;
-    width: 80%;
-    font-size: 14px;
-  }
-
-
-  #download {
-    margin-bottom: 20px;
-    padding: 12px 25px;
-    background: #17a2b8;
-    color: white;
-    border: none;
+    height: auto;
+    max-height: 60%;
+    object-fit: contain;
     border-radius: 8px;
+    margin-bottom: 10px;
+  }
+
+  input[type="file"] {
+    margin-bottom: 10px;
+    padding: 6px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+  }
+
+  button {
+    background-color: #1d72b8;
+    color: white;
+    border: none;
+    padding: 10px 16px;
     cursor: pointer;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    transition: background 0.2s, transform 0.1s;
+  }
+
+  button:hover {
+    background-color: #1661a0;
+    transform: translateY(-2px);
+  }
+	
+  #download {
+    margin-top: 25px;
     font-size: 16px;
-    width: 200px;
-    max-width: 90%;
   }
 
-  #download:hover { background: #117a8b; }
-
- .enter-btn { background: #007BFF; }
-  .enter-btn:hover { background: #0056b3; }
-
-  .reset-btn { background: #dc3545; }
-  .reset-btn:hover { background: #a71d2a; }
-
-  .upload-label {
-    background: #28a745;
-    display: inline-block;
-    cursor: pointer;
-    text-align: center;
-  }
-
-  .upload-label:hover { background: #1e7e34; }
-	.upload-label input { display: none; }
-    
   /* Responsive */
-  @media (max-width: 768px) {
+  @media (max-width: 900px) {
     .grid {
-      grid-template-columns: repeat(1, 1fr);
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 600px) {
+    .grid {
+      grid-template-columns: 1fr;
     }
   }
 
   /* Print styles */
   @media print {
-    input, button, label { display: none !important; }
+    body * {
+      visibility: hidden;
+    }
+    .grid, .grid * {
+      visibility: visible;
+    }
     .grid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: grid !important;
       grid-template-columns: repeat(3, 1fr) !important;
-      gap: 0 !important;
-      width: 100% !important;
+      grid-gap: 0;
+      width: 100%;
     }
     .cell {
-      aspect-ratio: 1 / 1;
-      padding: 5px;
-      box-shadow: none;
-      border-radius: 0;
+      border: 1px solid #000;
+      min-height: 200px;
       display: flex;
       flex-direction: column;
-      justify-content: center;
+      justify-content: flex-start;
       align-items: center;
+      page-break-inside: avoid;
+      padding: 5px;
     }
-    .cell h2, .cell img {
-      display: block !important;
-      max-width: 100% !important;
-      max-height: 100% !important;
+    .cell input,
+    .cell button {
+      display: none !important;
+    }
+    .cell img {
+      max-width: 100%;
+      max-height: 150px;
+      object-fit: contain;
     }
   }
 </style>
 </head>
 <body>
-
-<h1>How We See Other - Grid</h1>
+<h1>How We See Other - Stylish Grid</h1>
+<div class="grid">
+  <div class="cell"><h2>Animal</h2><input type="file" class="upload" accept="image/*"><button class="reset" style="display:none;">Reset</button></div>
+  <div class="cell"><h2>Place</h2><input type="file" class="upload" accept="image/*"><button class="reset" style="display:none;">Reset</button></div>
+  <div class="cell"><h2>Plant</h2><input type="file" class="upload" accept="image/*"><button class="reset" style="display:none;">Reset</button></div>
+  <div class="cell"><h2>Character</h2><input type="file" class="upload" accept="image/*"><button class="reset" style="display:none;">Reset</button></div>
+  <div class="cell"><h2>Season</h2><input type="file" class="upload" accept="image/*"><button class="reset" style="display:none;">Reset</button></div>
+  <div class="cell"><h2>Hobby</h2><input type="file" class="upload" accept="image/*"><button class="reset" style="display:none;">Reset</button></div>
+  <div class="cell"><h2>Color</h2><input type="file" class="upload" accept="image/*"><button class="reset" style="display:none;">Reset</button></div>
+  <div class="cell"><h2>Crystal</h2><input type="file" class="upload" accept="image/*"><button class="reset" style="display:none;">Reset</button></div>
+  <div class="cell"><h2>Food</h2><input type="file" class="upload" accept="image/*"><button class="reset" style="display:none;">Reset</button></div>
+</div>
 <button id="download">Download Grid as PNG</button>
-<div class="grid" id="grid"></div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
 <script>
-  const categories = ['animal','place','plant','character','season','hobby','color','crystal','food'];
-  const grid = document.getElementById('grid');
+const cells = document.querySelectorAll('.cell');
+cells.forEach(cell => {
+  const upload = cell.querySelector('.upload');
+  const reset = cell.querySelector('.reset');
 
-  categories.forEach(cat => {
-    const cell = document.createElement('div');
-    cell.className = 'cell';
-
-    const title = document.createElement('h2');
-    title.innerText = cat;
-    cell.appendChild(title);
-
-    const input = document.createElement('input');
-    input.type = 'text';
-    input.placeholder = 'Image URL';
-    cell.appendChild(input);
-
-    const enterBtn = document.createElement('button');
-    enterBtn.innerText = 'Enter';
-    enterBtn.className = 'enter-btn';
-    cell.appendChild(enterBtn);
-
-    const uploadLabel = document.createElement('label');
-    uploadLabel.innerText = 'Upload';
-    uploadLabel.style.cursor = 'pointer';
-    const uploadInput = document.createElement('input');
-    uploadInput.type = 'file';
-    uploadInput.accept = 'image/*';
-    uploadInput.style.display = 'none';
-    uploadLabel.appendChild(uploadInput);
-    uploadLabel.className = 'upload-label';
-    cell.appendChild(uploadLabel);
-
-    const resetBtn = document.createElement('button');
-    resetBtn.innerText = 'Reset';
-    resetBtn.className = 'reset-btn';
-    resetBtn.style.order = 1;
-    cell.appendChild(resetBtn);
-
+  upload.addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
     const img = document.createElement('img');
+    img.src = URL.createObjectURL(file);
+    img.onload = () => URL.revokeObjectURL(img.src);
     cell.appendChild(img);
-
-    enterBtn.onclick = () => {
-      if(input.value){
-        img.src = input.value;
-        cell.classList.add('has-image');
-        input.style.display = 'none';
-        enterBtn.style.display = 'none';
-        uploadLabel.style.display = 'none';
-        resetBtn.style.order = 2;
-      }
-    };
-
-    uploadInput.onchange = (e) => {
-      if(e.target.files && e.target.files[0]){
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          img.src = event.target.result;
-          cell.classList.add('has-image');
-          input.style.display = 'none';
-          enterBtn.style.display = 'none';
-          uploadLabel.style.display = 'none';
-          resetBtn.style.order = 2;
-        }
-        reader.readAsDataURL(e.target.files[0]);
-      }
-    };
-
-    resetBtn.onclick = () => {
-      img.src = '';
-      cell.classList.remove('has-image');
-      input.style.display = 'block';
-      enterBtn.style.display = 'inline-block';
-      uploadLabel.style.display = 'inline-block';
-      resetBtn.style.order = 1;
-    };
-
-    grid.appendChild(cell);
+    upload.style.display = 'none';
+    reset.style.display = 'block';
   });
 
-document.getElementById('download').onclick = async () => {
-  const cells = document.querySelectorAll('.grid .cell');
-  const canvasSize = 900; // 3x3, κάθε κελί 300x300
+  reset.addEventListener('click', () => {
+    const img = cell.querySelector('img');
+    if (img) img.remove();
+    upload.style.display = 'block';
+    reset.style.display = 'none';
+  });
+});
+
+document.getElementById('download').addEventListener('click', async () => {
+  const canvasSize = 900;
   const cellSize = canvasSize / 3;
-  
   const canvas = document.createElement('canvas');
   canvas.width = canvasSize;
   canvas.height = canvasSize;
   const ctx = canvas.getContext('2d');
-  ctx.fillStyle = '#ffffff';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
 
-  for (let i = 0; i < cells.length; i++) {
+  for(let i=0;i<cells.length;i++){
     const cell = cells[i];
     const imgEl = cell.querySelector('img');
     const title = cell.querySelector('h2').innerText;
+    const row = Math.floor(i/3);
+    const col = i%3;
+    const x = col*cellSize;
+    const y = row*cellSize;
 
-    const row = Math.floor(i / 3);
-    const col = i % 3;
-    const x = col * cellSize;
-    const y = row * cellSize;
-
-    // Draw title
     ctx.fillStyle = '#000';
-    ctx.font = '20px Arial';
+    ctx.font = '22px Arial';
     ctx.textAlign = 'center';
-    ctx.fillText(title, x + cellSize / 2, y + 25);
+    ctx.fillText(title, x+cellSize/2, y+28);
 
-    // Draw image if exists
-    if(imgEl && imgEl.src) {
+    if(imgEl && imgEl.src){
       const img = new Image();
-      img.crossOrigin = 'anonymous'; // για URL images
       img.src = imgEl.src;
       await new Promise(resolve => {
         img.onload = () => {
-          const scale = Math.min(cellSize / img.width, (cellSize-30) / img.height);
-          const imgWidth = img.width * scale;
-          const imgHeight = img.height * scale;
-          ctx.drawImage(img, x + (cellSize - imgWidth)/2, y + 30, imgWidth, imgHeight);
+          const scale = Math.min(cellSize/img.width, (cellSize-40)/img.height);
+          const imgW = img.width*scale;
+          const imgH = img.height*scale;
+          ctx.drawImage(img, x+(cellSize-imgW)/2, y+35, imgW, imgH);
           resolve();
         }
-        img.onerror = resolve; // skip αν υπάρχει πρόβλημα
+        img.onerror = resolve;
       });
     }
 
-    // Draw cell border
     ctx.strokeStyle = '#ccc';
-    ctx.strokeRect(x, y, cellSize, cellSize);
+    ctx.strokeRect(x,y,cellSize,cellSize);
   }
 
-  // Μετατροπή σε blob και download
-  canvas.toBlob((blob) => {
+  canvas.toBlob(blob => {
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
     link.download = 'grid.png';
     link.click();
   }, 'image/png');
-};
+});
 </script>
-
 </body>
 </html>
